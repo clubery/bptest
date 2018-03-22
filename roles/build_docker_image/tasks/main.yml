@@ -1,0 +1,36 @@
+---
+- name: "Ensure image build directory exists"
+  file:
+    state: directory
+    path: "/opt/bptest"
+    owner: "{{ ansible_user }}"
+  become: true
+  
+- name: "Copy Dockerfile"
+  copy:
+    src: "files/Dockerfile"
+    dest: "/opt/bptest/Dockerfile"
+
+- name: "Copy nginx config"
+  copy:
+    src: "files/nginx-www.conf"
+    dest: "/opt/bptest/nginx-www.conf"
+
+- name: "Copy www index.html"
+  copy:
+    src: "files/index.html"
+    dest: "/opt/bptest/index.html"
+
+- name: "Build bptestapp image"
+  become: true
+  docker_image:
+    path: "/opt/bptest"
+    name: "bp/testapp"
+
+- name: "Run container"
+  become: true
+  docker_container:
+    name: "bptestapp"
+    image: "bp/testapp:latest"
+    state: started
+    published_ports: 0.0.0.0:8091:80

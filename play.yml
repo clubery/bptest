@@ -1,0 +1,5 @@
+---
+- hosts: default
+  roles:
+    - role: install_docker
+    - role: build_docker_image
